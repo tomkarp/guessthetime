@@ -10961,6 +10961,20 @@ var $author$project$Main$update = F2(
 	});
 var $author$project$Main$Start = {$: 'Start'};
 var $author$project$Main$Stop = {$: 'Stop'};
+var $elm$core$Basics$abs = function (n) {
+	return (n < 0) ? (-n) : n;
+};
+var $elm$core$Basics$round = _Basics_round;
+var $author$project$Main$punkte = F2(
+	function (sollZeit, istZeit) {
+		if (_Utils_cmp(istZeit, sollZeit) > 0) {
+			return 0;
+		} else {
+			var diff = $elm$core$Basics$abs(sollZeit - istZeit);
+			var prozent = 100 - ((100 * diff) / sollZeit);
+			return $elm$core$Basics$round(prozent);
+		}
+	});
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -10993,7 +11007,8 @@ var $author$project$Main$view = function (model) {
 					[
 						model.running ? $elm$html$Html$text(
 						'Stoppe nach ' + ($elm$core$String$fromInt(model.sollZeit) + ' Sekunden')) : $elm$html$Html$text(
-						$elm$core$String$fromInt(model.istZeit))
+						'Du hast nach ' + ($elm$core$String$fromInt(model.istZeit) + (' Sekunden gestoppt' + (' und hast ' + ($elm$core$String$fromInt(
+							A2($author$project$Main$punkte, model.sollZeit, model.istZeit)) + ' Punkte erreicht')))))
 					]))
 			]));
 };

@@ -21,6 +21,24 @@ type Msg
     | Tick Time.Posix
 
 
+punkte : Int -> Int -> Int
+punkte sollZeit istZeit =
+    -- alternativ z.B.:
+    -- sollZeit - istZeit |> abs
+    if istZeit > sollZeit then
+        0
+
+    else
+        let
+            diff =
+                sollZeit - istZeit |> toFloat |> abs
+
+            prozent =
+                100 - 100 * diff / toFloat sollZeit
+        in
+        prozent |> round
+
+
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { sollZeit = 15
@@ -62,7 +80,13 @@ view model =
                 text ("Stoppe nach " ++ String.fromInt model.sollZeit ++ " Sekunden")
 
               else
-                text (String.fromInt model.istZeit)
+                "Du hast nach "
+                    ++ String.fromInt model.istZeit
+                    ++ " Sekunden gestoppt"
+                    ++ " und hast "
+                    ++ String.fromInt (punkte model.sollZeit model.istZeit)
+                    ++ " Punkte erreicht"
+                    |> text
             ]
         ]
 
