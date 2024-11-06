@@ -10602,7 +10602,7 @@ var $elm$core$Basics$never = function (_v0) {
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{istZeit: 0, running: false, sollZeit: 15},
+		{istZeit: 0, maxZeit: 20, minZeit: 10, running: false, sollZeit: 15},
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Main$Tick = function (a) {
@@ -10937,7 +10937,33 @@ var $author$project$Main$update = F2(
 					A2(
 						$elm$random$Random$generate,
 						$author$project$Main$SollZeit,
-						A2($elm$random$Random$int, 10, 20)));
+						A2($elm$random$Random$int, model.minZeit, model.maxZeit)));
+			case 'NeueMinZeit':
+				var minZeit = msg.a;
+				return (minZeit < 0) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{minZeit: 0}),
+					$elm$core$Platform$Cmd$none) : ((_Utils_cmp(minZeit, model.maxZeit) > -1) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{minZeit: model.maxZeit - 1}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{minZeit: minZeit}),
+					$elm$core$Platform$Cmd$none));
+			case 'NeueMaxZeit':
+				var maxZeit = msg.a;
+				return (_Utils_cmp(maxZeit, model.minZeit + 1) < 0) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{maxZeit: model.minZeit + 1}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{maxZeit: maxZeit}),
+					$elm$core$Platform$Cmd$none);
 			case 'Stop':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -10959,7 +10985,6 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$Start = {$: 'Start'};
 var $author$project$Main$Stop = {$: 'Stop'};
 var $elm$core$Basics$abs = function (n) {
 	return (n < 0) ? (-n) : n;
@@ -10975,6 +11000,93 @@ var $author$project$Main$punkte = F2(
 			return $elm$core$Basics$round(prozent);
 		}
 	});
+var $author$project$Main$NeueMaxZeit = function (a) {
+	return {$: 'NeueMaxZeit', a: a};
+};
+var $author$project$Main$NeueMinZeit = function (a) {
+	return {$: 'NeueMinZeit', a: a};
+};
+var $author$project$Main$Start = {$: 'Start'};
+var $author$project$Main$viewStart = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Main$NeueMinZeit(model.minZeit - 1))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('-')
+					])),
+				$elm$html$Html$text(
+				$elm$core$String$fromInt(model.minZeit)),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Main$NeueMinZeit(model.minZeit + 1))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('+')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('bis')
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Main$NeueMaxZeit(model.maxZeit - 1))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('-')
+					])),
+				$elm$html$Html$text(
+				$elm$core$String$fromInt(model.maxZeit)),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Main$NeueMaxZeit(model.maxZeit + 1))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('+')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Sekunden')
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$Main$Start)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Start')
+					]))
+			]));
+};
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -10990,16 +11102,7 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text('Stop')
-					])) : A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick($author$project$Main$Start)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Start')
-					])),
+					])) : $author$project$Main$viewStart(model),
 				A2(
 				$elm$html$Html$div,
 				_List_Nil,
@@ -11015,7 +11118,7 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"Start":[],"Stop":[],"SollZeit":["Basics.Int"],"Tick":["Time.Posix"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}}}}})}});
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{},"unions":{"Main.Msg":{"args":[],"tags":{"Start":[],"NeueMinZeit":["Basics.Int"],"NeueMaxZeit":["Basics.Int"],"Stop":[],"SollZeit":["Basics.Int"],"Tick":["Time.Posix"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}}}}})}});
 
 //////////////////// HMR BEGIN ////////////////////
 
